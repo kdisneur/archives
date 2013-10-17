@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<!--[if lt IE 7 ]><html class="ie ie6" lang="en"> <![endif]-->
+<!--[if IE 7 ]><html class="ie ie7" lang="en"> <![endif]-->
+<!--[if IE 8 ]><html class="ie ie8" lang="en"> <![endif]-->
+<!--[if (gte IE 9)|!(IE)]><!--><html lang="en"> <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kevin Disneur - Sharing settings between front & back end application</title>
+  <meta name="author" content="Kevin Disneur" />
+  <meta name="description" content="The blog of Kevin Disneur" />
+  <link rel="canonical" href="http://blog.koboyz.org/2013-10-17-settings-js.html" />
+
+  <link
+  href="//fonts.googleapis.com/css?family=Open+Sans:400,300,600,700" rel="stylesheet" type="text/css">
+  <link rel="shortcut icon" href="/favicon.png">
+  <link rel="alternate" type="application/rss+xml" title="Kevin Disneur" href="http://blog.koboyz.org/atom.xml" />
+
+  <link rel="stylesheet" href="/assets/stylesheets/all.css">
+  <!--[if IE 7]>
+    <link rel="stylesheet" href="/assets/stylesheets/font-awesome-ie7.min.css">
+  <![endif]-->
+</head>
+<body>
+  <div class="container">
+    <div class="four columns sidebar">
+      <nav itemscope="" itemtype="http://data-vocabulary.org/Person">
+  <h1>Hi.</h1>
+  <a href="/">
+    <img src="/assets/images/me.jpg" id="logo" alt="Kevin Disneur" width="50%" itemprop="photo" />
+  </a>
+  <h2>I'm <a href="http://kevin.disneur.me" itemprop="name">Kevin Disneur</a>.</h2>
+  <hr/>
+  <div>
+    <div id="social">
+      Follow me:
+<div id="stalker">
+  
+    <a title="kdisneur on Github" href="http://github.com/kdisneur">
+      <i class="icon-github-sign"></i>
+    </a>
+  
+
+  
+    <a title="kdisneur on Twitter" href="http://twitter.com/kdisneur">
+      <i class="icon-twitter-sign"></i>
+    </a>
+  
+
+  
+    <a title="disneurkevin on LinkedIn" href="http://www.linkedin.com/in/disneurkevin">
+      <i class="icon-sign-blank"></i>
+      <span class="icon-overlay icon-linkedin"></span>
+    </a>
+  
+
+  <a title="RSS feed" id="rss" href="/atom.xml">
+    <i class="icon-rss-sign"></i>
+  </a>
+</div>
+
+    </div>
+  </div>
+</nav>
+
+    </div>
+
+    <div class="eleven columns content">
+      <p class="meta">
+  October 17, 2013
+  <a href="/">
+    <i class="home icon-home"></i>
+  </a>
+</p>
+
+<h1 class="title">Sharing settings between front & back end application</h1>
+
+<div id="post">
+  <p>How many times do you need to share some configuration between your server side app and your client side app? Many times, for sure!</p>
+
+<p>What&#39;s the possibilities?</p>
+
+<h2 id="toc_0">DRY as Do Repeat Yourself</h2>
+
+<p>The first solution seen in lot of applications is to duplicate the Rails settings in the JavaScript.</p>
+
+<h6 id="toc_1">Yaml</h6>
+<div class="highlight"><pre><code class="yaml language-yaml" data-lang="yaml"><span class="c1"># config/settings.yml</span>
+<span class="l-Scalar-Plain">mailer</span><span class="p-Indicator">:</span>
+  <span class="l-Scalar-Plain">from</span><span class="p-Indicator">:</span> <span class="s">&#39;John</span><span class="nv"> </span><span class="s">Doe</span><span class="nv"> </span><span class="s">&lt;noreply@company.com&gt;&#39;</span>
+<span class="l-Scalar-Plain">maps</span><span class="p-Indicator">:</span>
+  <span class="l-Scalar-Plain">defaults</span><span class="p-Indicator">:</span>
+    <span class="l-Scalar-Plain">latitude</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">42.00</span>
+    <span class="l-Scalar-Plain">longitude</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">31.00</span>
+    <span class="l-Scalar-Plain">zoom</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">4</span>
+</code></pre></div>
+<h6 id="toc_2">Rails</h6>
+<div class="highlight"><pre><code class="ruby language-ruby" data-lang="ruby"><span class="c1"># app/models/settings</span>
+<span class="k">class</span> <span class="nc">Settings</span> <span class="o">&lt;</span> <span class="no">Settingslogic</span>
+  <span class="n">source</span> <span class="no">Rails</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;config&#39;</span><span class="p">,</span> <span class="s1">&#39;settings&#39;</span><span class="p">,</span> <span class="s1">&#39;**&#39;</span><span class="p">,</span> <span class="s1">&#39;*.yml&#39;</span><span class="p">)</span>
+<span class="k">end</span>
+
+<span class="c1"># app/controllers/contact_controller.rb</span>
+<span class="k">class</span> <span class="nc">ContactController</span> <span class="o">&lt;</span> <span class="no">ApplicationController</span>
+  <span class="k">def</span> <span class="nf">show</span>
+    <span class="vi">@map_configuration</span> <span class="o">=</span> <span class="no">Settings</span><span class="o">.</span><span class="n">maps</span><span class="o">.</span><span class="n">defaults</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div>
+<h6 id="toc_3">Javascript</h6>
+<div class="highlight"><pre><code class="javascript language-javascript" data-lang="javascript"><span class="kd">var</span> <span class="nx">Settings</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="nx">maps</span><span class="o">:</span> <span class="p">{</span>
+    <span class="nx">defaults</span><span class="o">:</span> <span class="p">{</span>
+      <span class="nx">latitude</span><span class="o">:</span> <span class="mf">42.00</span><span class="p">,</span>
+      <span class="nx">longitude</span><span class="o">:</span> <span class="mf">31.00</span><span class="p">,</span>
+      <span class="nx">zoom</span><span class="o">:</span> <span class="mi">4</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="k">new</span> <span class="nx">google</span><span class="p">.</span><span class="nx">maps</span><span class="p">.</span><span class="nx">Map</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s1">&#39;map&#39;</span><span class="p">),</span> <span class="p">{</span>
+  <span class="nx">zoom</span><span class="o">:</span>      <span class="nx">Settings</span><span class="p">.</span><span class="nx">maps</span><span class="p">.</span><span class="nx">defaults</span><span class="p">.</span><span class="nx">zoom</span><span class="p">,</span>
+  <span class="nx">center</span><span class="o">:</span>    <span class="k">new</span> <span class="nx">google</span><span class="p">.</span><span class="nx">maps</span><span class="p">.</span><span class="nx">LatLng</span><span class="p">(</span><span class="nx">Settings</span><span class="p">.</span><span class="nx">maps</span><span class="p">.</span><span class="nx">defaults</span><span class="p">.</span><span class="nx">latitude</span><span class="p">,</span> <span class="nx">Settings</span><span class="p">.</span><span class="nx">maps</span><span class="p">.</span><span class="nx">defaults</span><span class="p">.</span><span class="nx">longitude</span><span class="p">),</span>
+  <span class="nx">mapTypeId</span><span class="o">:</span> <span class="nx">google</span><span class="p">.</span><span class="nx">maps</span><span class="p">.</span><span class="nx">MapTypeId</span><span class="p">.</span><span class="nx">ROADMAP</span>
+<span class="p">});</span>
+</code></pre></div>
+<table><thead>
+<tr>
+<th>Pros</th>
+<th>Cons</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>Easy to implement</td>
+<td>Configuration duplicated between JavaScript and Rails</td>
+</tr>
+<tr>
+<td></td>
+<td>Cannot be updated without rebooting the app</td>
+</tr>
+</tbody></table>
+
+<h2 id="toc_4">Ajax loading</h2>
+
+<p>Another solution could be a controller that responds with a JSON containing all the shared settings.</p>
+
+<h6 id="toc_5">Yaml</h6>
+<div class="highlight"><pre><code class="yaml language-yaml" data-lang="yaml"><span class="c1"># config/settings.yml</span>
+<span class="l-Scalar-Plain">mailer</span><span class="p-Indicator">:</span>
+  <span class="l-Scalar-Plain">from</span><span class="p-Indicator">:</span> <span class="s">&#39;John</span><span class="nv"> </span><span class="s">Doe</span><span class="nv"> </span><span class="s">&lt;noreply@company.com&gt;&#39;</span>
+<span class="l-Scalar-Plain">maps</span><span class="p-Indicator">:</span>
+  <span class="l-Scalar-Plain">defaults</span><span class="p-Indicator">:</span>
+    <span class="l-Scalar-Plain">latitude</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">42.00</span>
+    <span class="l-Scalar-Plain">longitude</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">31.00</span>
+    <span class="l-Scalar-Plain">zoom</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">4</span>
+</code></pre></div>
+<h6 id="toc_6">Rails</h6>
+<div class="highlight"><pre><code class="ruby language-ruby" data-lang="ruby"><span class="c1"># config/initializers/settings_js.rb</span>
+<span class="no">SettingsJs</span><span class="o">.</span><span class="n">configuration</span> <span class="k">do</span> <span class="o">|</span><span class="n">config</span><span class="o">|</span>
+  <span class="n">config</span><span class="o">.</span><span class="n">klass</span>   <span class="o">=</span> <span class="no">Settings</span>
+  <span class="n">config</span><span class="o">.</span><span class="n">keys</span>    <span class="o">=</span> <span class="sx">%w(maps)</span>
+<span class="k">end</span>
+
+<span class="c1"># app/models/settings.rb</span>
+<span class="k">class</span> <span class="nc">Settings</span> <span class="o">&lt;</span> <span class="no">Settingslogic</span>
+  <span class="n">source</span> <span class="no">Rails</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;config&#39;</span><span class="p">,</span> <span class="s1">&#39;settings&#39;</span><span class="p">,</span> <span class="s1">&#39;**&#39;</span><span class="p">,</span> <span class="s1">&#39;*.yml&#39;</span><span class="p">)</span>
+<span class="k">end</span>
+
+<span class="c1"># app/controllers/contact_controller.rb</span>
+<span class="k">class</span> <span class="nc">ContactController</span> <span class="o">&lt;</span> <span class="no">ApplicationController</span>
+  <span class="k">def</span> <span class="nf">show</span>
+    <span class="vi">@map_configuration</span> <span class="o">=</span> <span class="no">Settings</span><span class="o">.</span><span class="n">maps</span><span class="o">.</span><span class="n">defaults</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="c1"># app/controllers/configuration_controller.rb</span>
+<span class="k">class</span> <span class="nc">ConfigurationController</span> <span class="o">&lt;</span> <span class="no">ApplicationController</span>
+  <span class="n">respond_to</span> <span class="ss">:json</span>
+
+  <span class="k">def</span> <span class="nf">show</span>
+    <span class="vi">@settings</span> <span class="o">=</span> <span class="p">{</span> <span class="ss">maps</span><span class="p">:</span> <span class="no">Settings</span><span class="o">.</span><span class="n">maps</span> <span class="p">}</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div>
+<h6 id="toc_7">Javascript</h6>
+<div class="highlight"><pre><code class="javascript language-javascript" data-lang="javascript"><span class="nx">jQuery</span><span class="p">.</span><span class="nx">getJSON</span><span class="p">(</span><span class="s1">&#39;/configuration&#39;</span><span class="p">,</span> <span class="nx">success</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="nx">textStatus</span><span class="p">,</span> <span class="nx">jqXHR</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">new</span> <span class="nx">google</span><span class="p">.</span><span class="nx">maps</span><span class="p">.</span><span class="nx">Map</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s1">&#39;map&#39;</span><span class="p">),</span> <span class="p">{</span>
+    <span class="nx">zoom</span><span class="o">:</span>      <span class="nx">data</span><span class="p">.</span><span class="nx">maps</span><span class="p">.</span><span class="nx">defaults</span><span class="p">.</span><span class="nx">zoom</span><span class="p">,</span>
+    <span class="nx">center</span><span class="o">:</span>    <span class="k">new</span> <span class="nx">google</span><span class="p">.</span><span class="nx">maps</span><span class="p">.</span><span class="nx">LatLng</span><span class="p">(</span><span class="nx">data</span><span class="p">.</span><span class="nx">maps</span><span class="p">.</span><span class="nx">defaults</span><span class="p">.</span><span class="nx">latitude</span><span class="p">,</span> <span class="nx">data</span><span class="p">.</span><span class="nx">maps</span><span class="p">.</span><span class="nx">defaults</span><span class="p">.</span><span class="nx">longitude</span><span class="p">),</span>
+    <span class="nx">mapTypeId</span><span class="o">:</span> <span class="nx">google</span><span class="p">.</span><span class="nx">maps</span><span class="p">.</span><span class="nx">MapTypeId</span><span class="p">.</span><span class="nx">ROADMAP</span>
+  <span class="p">});</span>
+<span class="p">});</span>
+</code></pre></div>
+<table><thead>
+<tr>
+<th>Pros</th>
+<th>Cons</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>If the configuration comes from the database it could update JavaScript settings without rebooting the app</td>
+<td>One additional HTTP request on every page</td>
+</tr>
+<tr>
+<td>Share the same settings between JavaScript and Rails</td>
+<td>More shared settings are needed, more complex becomes your ConfigurationController</td>
+</tr>
+</tbody></table>
+
+<h2 id="toc_8">Settings-js gem</h2>
+
+<p>The last solution is to use the <a href="https://github.com/fanaticio/settings-js">settings-js</a> gem that allows
+to share the same configuration between Rails and JavaScript without Ajax request.</p>
+
+<p>The gem can be bound with any backend but, for now, the only implemented backend is SettingsLogic.</p>
+
+<h6 id="toc_9">Configuration</h6>
+<div class="highlight"><pre><code class="yaml language-yaml" data-lang="yaml"><span class="c1"># config/settings.yml</span>
+<span class="l-Scalar-Plain">mailer</span><span class="p-Indicator">:</span>
+  <span class="l-Scalar-Plain">from</span><span class="p-Indicator">:</span> <span class="s">&#39;John</span><span class="nv"> </span><span class="s">Doe</span><span class="nv"> </span><span class="s">&lt;noreply@company.com&gt;&#39;</span>
+<span class="l-Scalar-Plain">maps</span><span class="p-Indicator">:</span>
+  <span class="l-Scalar-Plain">defaults</span><span class="p-Indicator">:</span>
+    <span class="l-Scalar-Plain">latitude</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">42.00</span>
+    <span class="l-Scalar-Plain">longitude</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">31.00</span>
+    <span class="l-Scalar-Plain">zoom</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">4</span>
+</code></pre></div>
+<h6 id="toc_10">Rails</h6>
+<div class="highlight"><pre><code class="ruby language-ruby" data-lang="ruby"><span class="c1"># config/initializers/settings_js.rb</span>
+<span class="no">SettingsJs</span><span class="o">.</span><span class="n">configuration</span> <span class="k">do</span> <span class="o">|</span><span class="n">config</span><span class="o">|</span>
+  <span class="n">config</span><span class="o">.</span><span class="n">klass</span>   <span class="o">=</span> <span class="no">Settings</span>
+  <span class="n">config</span><span class="o">.</span><span class="n">keys</span>    <span class="o">=</span> <span class="sx">%w(maps)</span>
+<span class="k">end</span>
+
+<span class="c1"># app/models/settings.rb</span>
+<span class="k">class</span> <span class="nc">Settings</span> <span class="o">&lt;</span> <span class="no">Settingslogic</span>
+  <span class="n">source</span> <span class="no">Rails</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;config&#39;</span><span class="p">,</span> <span class="s1">&#39;settings&#39;</span><span class="p">,</span> <span class="s1">&#39;**&#39;</span><span class="p">,</span> <span class="s1">&#39;*.yml&#39;</span><span class="p">)</span>
+<span class="k">end</span>
+
+<span class="c1"># app/controllers/contact_controller.rb</span>
+<span class="k">class</span> <span class="nc">ContactController</span> <span class="o">&lt;</span> <span class="no">ApplicationController</span>
+  <span class="k">def</span> <span class="nf">show</span>
+    <span class="vi">@map_configuration</span> <span class="o">=</span> <span class="no">Settings</span><span class="o">.</span><span class="n">maps</span><span class="o">.</span><span class="n">defaults</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div>
+<h6 id="toc_11">Javascript</h6>
+<div class="highlight"><pre><code class="javascript language-javascript" data-lang="javascript"><span class="c1">//= require settings-js/settings</span>
+
+<span class="k">new</span> <span class="nx">google</span><span class="p">.</span><span class="nx">maps</span><span class="p">.</span><span class="nx">Map</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s1">&#39;map&#39;</span><span class="p">),</span> <span class="p">{</span>
+  <span class="nx">zoom</span><span class="o">:</span>      <span class="nx">Settings</span><span class="p">.</span><span class="nx">maps</span><span class="p">.</span><span class="nx">defaults</span><span class="p">.</span><span class="nx">zoom</span><span class="p">,</span>
+  <span class="nx">center</span><span class="o">:</span>    <span class="k">new</span> <span class="nx">google</span><span class="p">.</span><span class="nx">maps</span><span class="p">.</span><span class="nx">LatLng</span><span class="p">(</span><span class="nx">Settings</span><span class="p">.</span><span class="nx">maps</span><span class="p">.</span><span class="nx">defaults</span><span class="p">.</span><span class="nx">latitude</span><span class="p">,</span> <span class="nx">Settings</span><span class="p">.</span><span class="nx">maps</span><span class="p">.</span><span class="nx">defaults</span><span class="p">.</span><span class="nx">longitude</span><span class="p">),</span>
+  <span class="nx">mapTypeId</span><span class="o">:</span> <span class="nx">google</span><span class="p">.</span><span class="nx">maps</span><span class="p">.</span><span class="nx">MapTypeId</span><span class="p">.</span><span class="nx">ROADMAP</span>
+<span class="p">});</span>
+</code></pre></div>
+<table><thead>
+<tr>
+<th>Pros</th>
+<th>Cons</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>No additional HTTP requests</td>
+<td>Cannot be updated without rebooting the app</td>
+</tr>
+<tr>
+<td>Share the same configuration between Rails and JavaScript</td>
+<td></td>
+</tr>
+</tbody></table>
+
+</div>
+
+<div class="social-sharing">
+  <ul class="social-links">
+    <li class="two columns">
+      <a href="https://www.facebook.com/sharer/sharer.php" onclick="window.open(this.href + '?u=' + encodeURIComponent(location.href), 'facebook-share-dialog', 'width=626,height=436'); return false;" class="button facebook">Facebook</a>
+    </li>
+    <li class="two columns">
+      <a href="http://www.twitter.com/share" onclick="window.open(this.href + '?url=' + encodeURIComponent(location.href))" class="button twitter">Twitter</a>
+    </li>
+    <li class="two columns">
+      <a href="https://plus.google.com/share" onclick="window.open(this.href + '?url=' + encodeURIComponent(location.href), '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;" class="button googleplus">Google +</a>
+    </li>
+  </ul>
+</div>
+
+<p>If you have suggestions, fixes, or anything else? Contact me on <a href="https://twitter.com/kdisneur">Twitter</a> or drop me an email at <a href="mailto:kevin@koboyz.org">kevin@koboyz.org</a></p>
+
+
+
+
+      <div class="footer">
+        <div class="disclaimer">
+  <p>Blog built with <a href="http://jekyllrb.com">Jekyll</a> and deployed on <a href="https://github.com">Github</a></p>
+</div>
+
+      </div>
+    </div>
+  </div>
+
+  
+
+</body>
+</html>
