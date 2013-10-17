@@ -13,7 +13,7 @@ What's the possibilities?
 
 ## DRY as Do Repeat Yourself
 
-The first solution seen in lot of applications: duplicate the Rails settings in the JavaScript.
+The first solution seen in lot of applications is to duplicate the Rails settings in the JavaScript.
 
 ###### Yaml
 
