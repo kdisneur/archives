@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+ 
+ <title>The blog of </title>
+ <link href="http://blog.koboyz.org/atom.xml" rel="self"/>
+ <link href="http://blog.koboyz.org"/>
+ <updated>2013-10-17T13:42:28+02:00</updated>
+ <id>http://blog.koboyz.org</id>
+ <author>
+   <name></name>
+   <email></email>
+ </author>
+
+ 
+ 
+</feed>
