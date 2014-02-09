@@ -6,10 +6,10 @@ tags:
   - vagrant
   - tmux
 ---
-A few month ago, I moved to a new company. Before that, I was
-accustomed to use an OSX environment to work on Rails or Node. Now, I'm
-still working on an OSX laptop but I don't have full access (root) to the
-system. So, I had to find a workaround to install all the software I need.
+A few month ago, I moved to a new company. Before that, I was used an OSX 
+environment to work on Rails or Node. Today, I'm still working on an OSX
+but I don't have full access (root) to the system. I had to find a 
+workaround to install all the software I need.
 
 ## Step 1: Having full access
 
