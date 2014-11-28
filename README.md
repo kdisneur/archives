@@ -17,7 +17,7 @@ bundle
 ### Development
 
 ```shell
-jekyll serve
+jekyll serve -w
 ```
 
 ### Deployment
