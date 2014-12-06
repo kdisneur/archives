@@ -10,7 +10,6 @@
 ```shell
 git clone git@github.com:kdisneur/blog.git
 cd blog
-git submodule update
 bundle
 ```
 
@@ -23,10 +22,6 @@ jekyll serve -w -D
 ### Deployment
 
 ```shell
-jekyll build
-cd build
-git add .
-git commit
-git push
-cd ..
+cp s3cfg.sample s3cfg
+./deploy
 ```
