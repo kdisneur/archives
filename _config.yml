@@ -1,6 +1,6 @@
 pygments: true
-url: http://archives.kevin.disneur.me
-main_site_url: http://kevin.disneur.me
+url: https://archives.kevin.disneur.me
+main_site_url: https://kevin.disneur.me
 lsi: false
 future: false
 destination: build
