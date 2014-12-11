@@ -70,7 +70,8 @@ In this case you could have an history like:
 * ab01dcd - commit 1 (2014-12-09 15:04:38) <Richard>
 ```
 
-Much more readable, right?
+Much more readable, right? And, as you can see, the commits that come from the remote stayed the same. Andrew's commit
+was the only one which has changed. The SHA was #a24d2c5 and is now #a24d2c5, because Git replayed this commit.
 
 ### At the end of your feature
 
