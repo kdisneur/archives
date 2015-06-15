@@ -43,7 +43,7 @@ Now we should be able to run the tests and see if they work well.
 The build takes 3 minutes 43 to run the tests. It's not too bad, but we could improve the build speed using
 the caching feature from Circle-CI. This feature allows you to cache specific folders so we can run some commands only
 when it's necessary.
-This feature seems really useful but that's also mean we couldn't rely on `apt-get` anymore. We will have to install the
+This feature seems really useful but that's also mean we can't rely on `apt-get` anymore. We will have to install the
 languages ourself.
 
 To do that we can use an [agnostic version manager: asdf](https://github.com/HashNuke/asdf). This version manager is able
@@ -68,7 +68,7 @@ dependencies:
   cache_directories:
     - ~/.asdf
   pre:
-    - if ! asdf | grep version; then git clone https://github.com/kdisneur/asdf.git ~/.asdf; fi
+    - if ! asdf | grep version; then git clone https://github.com/HashNuke/asdf.git ~/.asdf; fi
     - if ! asdf plugin-list | grep erlang; then asdf plugin-add erlang https://github.com/HashNuke/asdf-erlang.git; fi
     - if ! asdf plugin-list | grep elixir; then asdf plugin-add elixir https://github.com/HashNuke/asdf-elixir.git; fi
     - erlang_version=$(awk '/erlang/ { print $2 }' .tool-versions); if ! asdf list erlang | grep ${erlang_version}; then asdf install erlang ${erlang_version}; fi
@@ -117,3 +117,5 @@ As much as possible we shouldn't use the Circle-CI cache feature for our code. W
 for dependencies.
 
 You have now all cards in hand to follow the Circle-CI baseline: "ship better code, faster".
+
+_Special thanks to [@a_laibe](https://twitter.com/a_laibe) and [@sreid5](https://twitter.com/sreid5) for the review and feedbacks._
